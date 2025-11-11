@@ -168,6 +168,7 @@ export default function ClientDetail() {
             <ChatPanel
               title="AI Clinical Assistant"
               placeholder="Ask about this client's treatment..."
+              clientId={mockClient.id}
               contextType="client"
             />
           </Card>

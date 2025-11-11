@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertClientSchema, insertSessionSchema, insertNoteSchema, insertFrameworkSchema, insertChatMessageSchema } from "@shared/schema";
+import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Client routes
@@ -216,7 +217,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI chat endpoint that generates responses
   app.post("/api/chat/generate", async (req, res) => {
     try {
-      const { message, clientId } = req.body;
+      // Validate request body
+      const chatRequestSchema = z.object({
+        message: z.string().min(1).max(5000),
+        clientId: z.string().optional(),
+      });
+      
+      const { message, clientId } = chatRequestSchema.parse(req.body);
       
       // Save user message
       await storage.createChatMessage({
@@ -240,6 +247,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json(aiMessage);
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid request data", details: error.errors });
+      }
       res.status(500).json({ error: "Failed to generate response" });
     }
   });

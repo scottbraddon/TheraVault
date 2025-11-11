@@ -100,6 +100,26 @@ export class MemStorage implements IStorage {
   }
 
   async deleteClient(id: string): Promise<boolean> {
+    // Cascade delete: remove all associated sessions, notes, and chat messages
+    const sessions = await this.getSessionsByClient(id);
+    
+    // Delete notes for each session
+    for (const session of sessions) {
+      const notes = await this.getNotesBySession(session.id);
+      for (const note of notes) {
+        this.notes.delete(note.id);
+      }
+      // Delete the session itself
+      this.sessions.delete(session.id);
+    }
+    
+    // Delete chat messages for this client
+    const chatMessages = await this.getChatMessages(id);
+    for (const message of chatMessages) {
+      this.chatMessages.delete(message.id);
+    }
+    
+    // Finally delete the client
     return this.clients.delete(id);
   }
 
