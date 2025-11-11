@@ -18,7 +18,10 @@ export const insertClientSchema = createInsertSchema(clients).omit({
   createdAt: true,
 });
 
+export const updateClientSchema = insertClientSchema.partial();
+
 export type InsertClient = z.infer<typeof insertClientSchema>;
+export type UpdateClient = z.infer<typeof updateClientSchema>;
 export type Client = typeof clients.$inferSelect;
 
 export const sessions = pgTable("sessions", {
@@ -42,7 +45,10 @@ export const insertSessionSchema = createInsertSchema(sessions).omit({
   ),
 });
 
+export const updateSessionSchema = insertSessionSchema.partial();
+
 export type InsertSession = z.infer<typeof insertSessionSchema>;
+export type UpdateSession = z.infer<typeof updateSessionSchema>;
 export type Session = typeof sessions.$inferSelect;
 
 export const notes = pgTable("notes", {
@@ -75,7 +81,10 @@ export const insertFrameworkSchema = createInsertSchema(frameworks).omit({
   createdAt: true,
 });
 
+export const updateFrameworkSchema = insertFrameworkSchema.partial();
+
 export type InsertFramework = z.infer<typeof insertFrameworkSchema>;
+export type UpdateFramework = z.infer<typeof updateFrameworkSchema>;
 export type Framework = typeof frameworks.$inferSelect;
 
 export const frameworkFiles = pgTable("framework_files", {

@@ -1,7 +1,16 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertClientSchema, insertSessionSchema, insertNoteSchema, insertFrameworkSchema, insertChatMessageSchema } from "@shared/schema";
+import { 
+  insertClientSchema, 
+  insertSessionSchema, 
+  insertNoteSchema, 
+  insertFrameworkSchema, 
+  insertChatMessageSchema,
+  updateClientSchema,
+  updateSessionSchema,
+  updateFrameworkSchema
+} from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -39,12 +48,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/clients/:id", async (req, res) => {
     try {
-      const client = await storage.updateClient(req.params.id, req.body);
+      const data = updateClientSchema.parse(req.body);
+      const client = await storage.updateClient(req.params.id, data);
       if (!client) {
         return res.status(404).json({ error: "Client not found" });
       }
       res.json(client);
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid client data", details: error.errors });
+      }
       res.status(500).json({ error: "Failed to update client" });
     }
   });
@@ -107,12 +120,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/sessions/:id", async (req, res) => {
     try {
-      const session = await storage.updateSession(req.params.id, req.body);
+      const data = updateSessionSchema.parse(req.body);
+      const session = await storage.updateSession(req.params.id, data);
       if (!session) {
         return res.status(404).json({ error: "Session not found" });
       }
       res.json(session);
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid session data", details: error.errors });
+      }
       res.status(500).json({ error: "Failed to update session" });
     }
   });
@@ -171,12 +188,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/frameworks/:id", async (req, res) => {
     try {
-      const framework = await storage.updateFramework(req.params.id, req.body);
+      const data = updateFrameworkSchema.parse(req.body);
+      const framework = await storage.updateFramework(req.params.id, data);
       if (!framework) {
         return res.status(404).json({ error: "Framework not found" });
       }
       res.json(framework);
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid framework data", details: error.errors });
+      }
       res.status(500).json({ error: "Failed to update framework" });
     }
   });

@@ -1,12 +1,15 @@
 import {
   type Client,
   type InsertClient,
+  type UpdateClient,
   type Session,
   type InsertSession,
+  type UpdateSession,
   type Note,
   type InsertNote,
   type Framework,
   type InsertFramework,
+  type UpdateFramework,
   type FrameworkFile,
   type InsertFrameworkFile,
   type ChatMessage,
@@ -19,7 +22,7 @@ export interface IStorage {
   getClient(id: string): Promise<Client | undefined>;
   getAllClients(): Promise<Client[]>;
   createClient(client: InsertClient): Promise<Client>;
-  updateClient(id: string, client: Partial<InsertClient>): Promise<Client | undefined>;
+  updateClient(id: string, client: UpdateClient): Promise<Client | undefined>;
   deleteClient(id: string): Promise<boolean>;
 
   // Sessions
@@ -27,7 +30,7 @@ export interface IStorage {
   getSessionsByClient(clientId: string): Promise<Session[]>;
   getAllSessions(): Promise<Session[]>;
   createSession(session: InsertSession): Promise<Session>;
-  updateSession(id: string, session: Partial<InsertSession>): Promise<Session | undefined>;
+  updateSession(id: string, session: UpdateSession): Promise<Session | undefined>;
 
   // Notes
   getNotesBySession(sessionId: string): Promise<Note[]>;
@@ -37,7 +40,7 @@ export interface IStorage {
   getFramework(id: string): Promise<Framework | undefined>;
   getAllFrameworks(): Promise<Framework[]>;
   createFramework(framework: InsertFramework): Promise<Framework>;
-  updateFramework(id: string, framework: Partial<InsertFramework>): Promise<Framework | undefined>;
+  updateFramework(id: string, framework: UpdateFramework): Promise<Framework | undefined>;
   deleteFramework(id: string): Promise<boolean>;
 
   // Framework Files
@@ -90,7 +93,7 @@ export class MemStorage implements IStorage {
     return client;
   }
 
-  async updateClient(id: string, updateData: Partial<InsertClient>): Promise<Client | undefined> {
+  async updateClient(id: string, updateData: UpdateClient): Promise<Client | undefined> {
     const client = this.clients.get(id);
     if (!client) return undefined;
 
@@ -155,7 +158,7 @@ export class MemStorage implements IStorage {
     return session;
   }
 
-  async updateSession(id: string, updateData: Partial<InsertSession>): Promise<Session | undefined> {
+  async updateSession(id: string, updateData: UpdateSession): Promise<Session | undefined> {
     const session = this.sessions.get(id);
     if (!session) return undefined;
 
@@ -207,7 +210,7 @@ export class MemStorage implements IStorage {
     return framework;
   }
 
-  async updateFramework(id: string, updateData: Partial<InsertFramework>): Promise<Framework | undefined> {
+  async updateFramework(id: string, updateData: UpdateFramework): Promise<Framework | undefined> {
     const framework = this.frameworks.get(id);
     if (!framework) return undefined;
 
