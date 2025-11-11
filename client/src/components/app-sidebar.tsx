@@ -16,27 +16,27 @@ import { Badge } from "@/components/ui/badge";
 const menuItems = [
   {
     title: "Dashboard",
-    url: "/",
+    url: "/dashboard",
     icon: Home,
   },
   {
     title: "Clients",
-    url: "/clients",
+    url: "/dashboard/clients",
     icon: Users,
   },
   {
     title: "Sessions",
-    url: "/sessions",
+    url: "/dashboard/sessions",
     icon: Calendar,
   },
   {
     title: "Frameworks",
-    url: "/frameworks",
+    url: "/dashboard/frameworks",
     icon: BookOpen,
   },
   {
     title: "Settings",
-    url: "/settings",
+    url: "/dashboard/settings",
     icon: Settings,
   },
 ];

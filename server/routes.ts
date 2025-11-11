@@ -311,6 +311,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Download endpoint for desktop installers
+  app.get("/api/download/:platform", async (req, res) => {
+    const { platform } = req.params;
+    
+    // Map platform to installer filename
+    const installerFiles: Record<string, string> = {
+      windows: "CounselSync-Setup.exe",
+      mac: "CounselSync.dmg",
+      linux: "CounselSync.AppImage",
+    };
+
+    const filename = installerFiles[platform];
+    
+    if (!filename) {
+      return res.status(400).json({ error: "Invalid platform. Use: windows, mac, or linux" });
+    }
+
+    const filePath = `release/${filename}`;
+    
+    // Check if installer file exists
+    try {
+      await import("fs").then(fs => fs.promises.access(filePath));
+      // File exists, serve it
+      res.download(filePath, filename, (err) => {
+        if (err) {
+          res.status(500).json({ 
+            error: "Failed to download installer",
+            details: err.message 
+          });
+        }
+      });
+    } catch (error) {
+      // File doesn't exist yet
+      res.status(404).json({
+        error: "Installer not yet built",
+        message: "To build the desktop installer, run: npm run electron:build",
+        platform,
+        filename,
+        buildPath: filePath,
+        instructions: [
+          "1. Run 'npm run build' to build the web app",
+          "2. Run 'npm run electron:build' to create the installer",
+          `3. The installer will be created at ${filePath}`
+        ]
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

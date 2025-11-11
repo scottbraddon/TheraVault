@@ -46,7 +46,7 @@ app.use((req, res, next) => {
   next();
 });
 
-(async () => {
+async function startServer() {
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -78,4 +78,14 @@ app.use((req, res, next) => {
   }, () => {
     log(`serving on port ${port}`);
   });
-})();
+  
+  return server;
+}
+
+// When run directly (not imported), start the server
+if (import.meta.url === `file://${process.argv[1]}`) {
+  startServer();
+}
+
+// Export for Electron to import
+export default startServer;

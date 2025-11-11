@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
+import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
 import Clients from "@/pages/clients";
 import ClientDetail from "@/pages/client-detail";
@@ -14,42 +15,45 @@ import Frameworks from "@/pages/frameworks";
 import Settings from "@/pages/settings";
 import NotFound from "@/pages/not-found";
 
-function Router() {
-  return (
-    <Switch>
-      <Route path="/" component={Dashboard} />
-      <Route path="/clients" component={Clients} />
-      <Route path="/clients/:id" component={ClientDetail} />
-      <Route path="/sessions" component={Sessions} />
-      <Route path="/frameworks" component={Frameworks} />
-      <Route path="/settings" component={Settings} />
-      <Route component={NotFound} />
-    </Switch>
-  );
-}
-
-function App() {
+function DashboardLayout() {
   const style = {
     "--sidebar-width": "16rem",
   };
 
   return (
+    <SidebarProvider style={style as React.CSSProperties}>
+      <div className="flex h-screen w-full">
+        <AppSidebar />
+        <div className="flex flex-col flex-1">
+          <header className="flex items-center justify-between p-4 border-b">
+            <SidebarTrigger data-testid="button-sidebar-toggle" />
+            <ThemeToggle />
+          </header>
+          <main className="flex-1 overflow-auto">
+            <Switch>
+              <Route path="/dashboard" component={Dashboard} />
+              <Route path="/dashboard/clients" component={Clients} />
+              <Route path="/dashboard/clients/:id" component={ClientDetail} />
+              <Route path="/dashboard/sessions" component={Sessions} />
+              <Route path="/dashboard/frameworks" component={Frameworks} />
+              <Route path="/dashboard/settings" component={Settings} />
+              <Route component={NotFound} />
+            </Switch>
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
+  );
+}
+
+function App() {
+  return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <SidebarProvider style={style as React.CSSProperties}>
-          <div className="flex h-screen w-full">
-            <AppSidebar />
-            <div className="flex flex-col flex-1">
-              <header className="flex items-center justify-between p-4 border-b">
-                <SidebarTrigger data-testid="button-sidebar-toggle" />
-                <ThemeToggle />
-              </header>
-              <main className="flex-1 overflow-auto">
-                <Router />
-              </main>
-            </div>
-          </div>
-        </SidebarProvider>
+        <Switch>
+          <Route path="/" component={Landing} />
+          <Route path="/dashboard/*?" component={DashboardLayout} />
+        </Switch>
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>

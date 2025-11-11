@@ -6,6 +6,34 @@ CounselSync is a privacy-first, offline counselling practice management system d
 
 ## Recent Changes (November 11, 2025)
 
+### Dual Deployment Model Implemented
+- Created landing page at `/` with two deployment options: Cloud version and Desktop app
+- Restructured routing: existing app moved to `/dashboard/*`, landing page at root
+- Added Electron packaging infrastructure for desktop distribution
+- Implemented platform detection and download endpoint for installers
+- Cloud version available instantly at `/dashboard`, desktop version for clinical use
+
+### Electron Desktop Packaging
+- Created `electron/main.js` entry point that:
+  - Dev mode: Connects to separate dev server (run `npm run dev` separately)
+  - Prod mode: Imports bundled server directly, sets NODE_ENV=production
+  - Opens application in native window
+  - Properly manages server lifecycle
+- Configured electron-builder for multi-platform installers (Windows .exe, macOS .dmg, Linux .AppImage)
+- Download API endpoint at `/api/download/:platform` serves installer files
+- Auto-detects user platform for seamless download experience
+
+**Building Desktop Installers:**
+1. Build the web app: `npm run build`
+2. Build Electron installers: `npm run electron:build`
+3. Installers created in `release/` directory
+4. Download endpoint serves files from `release/`
+
+**Electron Development:**
+- Run `npm run dev` in one terminal (starts Express + Vite)
+- Run `npm run electron:dev` in another terminal (opens Electron window)
+- Electron connects to localhost:5000
+
 ### MVP Implementation Complete
 - Fixed critical session schema inconsistency - standardized on `sessionType` field across frontend/backend
 - Resolved data isolation bug - each client now correctly sees only their own sessions via `useClientSessions` hook
