@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChatPanel } from "@/components/chat-panel";
 import { useClient } from "@/hooks/use-clients";
-import { useSessions } from "@/hooks/use-sessions";
+import { useClientSessions } from "@/hooks/use-sessions";
 
 export default function ClientDetail() {
   const params = useParams();
@@ -17,7 +17,7 @@ export default function ClientDetail() {
   const [activeTab, setActiveTab] = useState("sessions");
   
   const { data: client, isLoading: isLoadingClient } = useClient(clientId);
-  const { data: sessions = [], isLoading: isLoadingSessions } = useSessions(clientId);
+  const { data: sessions = [], isLoading: isLoadingSessions } = useClientSessions(clientId);
   
   if (isLoadingClient) {
     return (

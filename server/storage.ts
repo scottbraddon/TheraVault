@@ -145,7 +145,7 @@ export class MemStorage implements IStorage {
       clientId: insertSession.clientId,
       date: insertSession.date,
       duration: insertSession.duration,
-      type: insertSession.type,
+      sessionType: insertSession.sessionType,
       status: insertSession.status ?? "pending",
       audioFilePath: insertSession.audioFilePath ?? null,
       transcription: insertSession.transcription ?? null,

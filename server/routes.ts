@@ -98,7 +98,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const session = await storage.createSession(data);
       res.status(201).json(session);
     } catch (error) {
-      res.status(400).json({ error: "Invalid session data" });
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: "Invalid session data", details: error.errors });
+      }
+      res.status(500).json({ error: "Failed to create session" });
     }
   });
 

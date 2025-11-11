@@ -26,7 +26,7 @@ export const sessions = pgTable("sessions", {
   clientId: varchar("client_id").notNull().references(() => clients.id),
   date: timestamp("date").notNull(),
   duration: integer("duration").notNull(),
-  type: text("type").notNull(),
+  sessionType: text("session_type").notNull(),
   status: text("status").notNull().default("pending"),
   audioFilePath: text("audio_file_path"),
   transcription: text("transcription"),
@@ -36,6 +36,10 @@ export const sessions = pgTable("sessions", {
 export const insertSessionSchema = createInsertSchema(sessions).omit({
   id: true,
   createdAt: true,
+}).extend({
+  date: z.union([z.string(), z.date()]).transform((val) => 
+    typeof val === "string" ? new Date(val) : val
+  ),
 });
 
 export type InsertSession = z.infer<typeof insertSessionSchema>;
