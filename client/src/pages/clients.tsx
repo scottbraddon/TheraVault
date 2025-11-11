@@ -7,11 +7,25 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useClients } from "@/hooks/use-clients";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { useClients, useCreateClient } from "@/hooks/use-clients";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Clients() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newClientName, setNewClientName] = useState("");
   const { data: clients, isLoading } = useClients();
+  const { mutate: createClient, isPending } = useCreateClient();
+  const { toast } = useToast();
 
   const filteredClients = (clients || []).filter(client =>
     client.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -21,6 +35,38 @@ export default function Clients() {
     return name.split(" ").map(n => n[0]).join("").toUpperCase();
   };
 
+  const handleCreateClient = () => {
+    if (!newClientName.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a client name",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    createClient(
+      { name: newClientName.trim(), status: "active" },
+      {
+        onSuccess: () => {
+          toast({
+            title: "Success",
+            description: "Client created successfully",
+          });
+          setIsDialogOpen(false);
+          setNewClientName("");
+        },
+        onError: () => {
+          toast({
+            title: "Error",
+            description: "Failed to create client",
+            variant: "destructive",
+          });
+        },
+      }
+    );
+  };
+
   return (
     <div className="p-8 space-y-8 max-w-7xl">
       <div className="flex items-center justify-between gap-4">
@@ -28,7 +74,7 @@ export default function Clients() {
           <h1 className="text-2xl font-semibold" data-testid="text-page-title">Clients</h1>
           <p className="text-muted-foreground">Manage your client records</p>
         </div>
-        <Button data-testid="button-new-client" onClick={() => console.log('Create new client')}>
+        <Button data-testid="button-new-client" onClick={() => setIsDialogOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
           New Client
         </Button>
@@ -104,6 +150,50 @@ export default function Clients() {
           ))}
         </div>
       )}
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create New Client</DialogTitle>
+            <DialogDescription>
+              Add a new client to your counselling practice
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="client-name">Client Name</Label>
+              <Input
+                id="client-name"
+                data-testid="input-client-name"
+                placeholder="Enter client name..."
+                value={newClientName}
+                onChange={(e) => setNewClientName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleCreateClient();
+                  }
+                }}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsDialogOpen(false)}
+              data-testid="button-cancel"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCreateClient}
+              disabled={isPending}
+              data-testid="button-create-client"
+            >
+              {isPending ? "Creating..." : "Create Client"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

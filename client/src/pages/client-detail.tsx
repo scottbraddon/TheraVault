@@ -1,53 +1,53 @@
 import { useState } from "react";
 import { ArrowLeft, User, Calendar, FileText, MessageSquare } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useParams } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ChatPanel } from "@/components/chat-panel";
-
-//todo: remove mock functionality
-const mockClient = {
-  id: "1",
-  name: "Sarah Johnson",
-  email: "sarah.j@example.com",
-  phone: "(555) 123-4567",
-  status: "active",
-  firstSession: "2024-03-15",
-  totalSessions: 8,
-  lastSession: "2024-11-10",
-};
-
-const mockSessions = [
-  {
-    id: "1",
-    date: "2024-11-10",
-    duration: 50,
-    type: "Individual Therapy",
-    status: "completed",
-  },
-  {
-    id: "2",
-    date: "2024-11-03",
-    duration: 50,
-    type: "Individual Therapy",
-    status: "completed",
-  },
-];
-
-const mockNotes = [
-  {
-    id: "1",
-    sessionDate: "2024-11-10",
-    content: "Client showed significant progress in managing anxiety symptoms. Continued work on cognitive restructuring techniques. Homework: practice thought records daily.",
-    createdBy: "AI-Generated",
-  },
-];
+import { useClient } from "@/hooks/use-clients";
+import { useSessions } from "@/hooks/use-sessions";
 
 export default function ClientDetail() {
+  const params = useParams();
+  const clientId = params.id as string;
   const [activeTab, setActiveTab] = useState("sessions");
+  
+  const { data: client, isLoading: isLoadingClient } = useClient(clientId);
+  const { data: sessions = [], isLoading: isLoadingSessions } = useSessions(clientId);
+  
+  if (isLoadingClient) {
+    return (
+      <div className="p-8 space-y-8 max-w-7xl">
+        <div className="flex items-center gap-4">
+          <Skeleton className="h-10 w-10 rounded" />
+          <div className="flex items-center gap-4 flex-1">
+            <Skeleton className="h-16 w-16 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-48" />
+              <Skeleton className="h-6 w-32" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  if (!client) {
+    return (
+      <div className="p-8 space-y-8 max-w-7xl">
+        <div className="text-center">
+          <p className="text-muted-foreground">Client not found</p>
+          <Link href="/clients">
+            <Button className="mt-4">Back to Clients</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 space-y-8 max-w-7xl">
@@ -64,13 +64,13 @@ export default function ClientDetail() {
             </AvatarFallback>
           </Avatar>
           <div className="space-y-1">
-            <h1 className="text-2xl font-semibold" data-testid="text-client-name">{mockClient.name}</h1>
+            <h1 className="text-2xl font-semibold" data-testid="text-client-name">{client.name}</h1>
             <div className="flex items-center gap-2">
-              <Badge variant={mockClient.status === "active" ? "default" : "secondary"}>
-                {mockClient.status}
+              <Badge variant={client.status === "active" ? "default" : "secondary"}>
+                {client.status}
               </Badge>
               <span className="text-sm text-muted-foreground">
-                {mockClient.totalSessions} sessions
+                {sessions.length} sessions
               </span>
             </div>
           </div>
@@ -98,41 +98,47 @@ export default function ClientDetail() {
         </TabsList>
 
         <TabsContent value="sessions" className="space-y-4 mt-6">
-          {mockSessions.map((session) => (
-            <Card key={session.id} data-testid={`card-session-${session.id}`}>
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <div className="font-medium">{session.type}</div>
-                    <div className="text-sm text-muted-foreground">
-                      <span className="font-mono">{session.date}</span>
-                      <span className="mx-2">•</span>
-                      <span>{session.duration} minutes</span>
+          {isLoadingSessions ? (
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <Card key={i}>
+                  <CardContent className="p-6">
+                    <Skeleton className="h-20 w-full" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : sessions.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No sessions recorded yet</p>
+            </div>
+          ) : (
+            sessions.map((session) => (
+              <Card key={session.id} data-testid={`card-session-${session.id}`}>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <div className="font-medium">{session.sessionType}</div>
+                      <div className="text-sm text-muted-foreground">
+                        <span className="font-mono">{new Date(session.date).toLocaleDateString()}</span>
+                        <span className="mx-2">•</span>
+                        <span>{session.duration} minutes</span>
+                      </div>
                     </div>
+                    <Button variant="outline" size="sm">
+                      View Details
+                    </Button>
                   </div>
-                  <Button variant="outline" size="sm">
-                    View Details
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))
+          )}
         </TabsContent>
 
         <TabsContent value="notes" className="space-y-4 mt-6">
-          {mockNotes.map((note) => (
-            <Card key={note.id} data-testid={`card-note-${note.id}`}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">Session: {note.sessionDate}</CardTitle>
-                  <Badge variant="secondary">{note.createdBy}</Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm whitespace-pre-wrap">{note.content}</p>
-              </CardContent>
-            </Card>
-          ))}
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Notes feature coming soon</p>
+          </div>
         </TabsContent>
 
         <TabsContent value="profile" className="mt-6">
@@ -142,21 +148,27 @@ export default function ClientDetail() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
+                {client.email && (
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground">Email</p>
+                    <p className="font-medium">{client.email}</p>
+                  </div>
+                )}
+                {client.phone && (
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground">Phone</p>
+                    <p className="font-medium">{client.phone}</p>
+                  </div>
+                )}
+                {client.firstSession && (
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground">First Session</p>
+                    <p className="font-medium font-mono">{new Date(client.firstSession).toLocaleDateString()}</p>
+                  </div>
+                )}
                 <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Email</p>
-                  <p className="font-medium">{mockClient.email}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Phone</p>
-                  <p className="font-medium">{mockClient.phone}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">First Session</p>
-                  <p className="font-medium font-mono">{mockClient.firstSession}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Last Session</p>
-                  <p className="font-medium font-mono">{mockClient.lastSession}</p>
+                  <p className="text-sm text-muted-foreground">Status</p>
+                  <p className="font-medium capitalize">{client.status}</p>
                 </div>
               </div>
             </CardContent>
@@ -168,7 +180,7 @@ export default function ClientDetail() {
             <ChatPanel
               title="AI Clinical Assistant"
               placeholder="Ask about this client's treatment..."
-              clientId={mockClient.id}
+              clientId={clientId}
               contextType="client"
             />
           </Card>
