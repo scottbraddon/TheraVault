@@ -1,8 +1,8 @@
-# CounselSync - Local Counselling CRM
+# TheraVault - Local Counselling CRM
 
 ## Overview
 
-CounselSync is a privacy-first, offline counselling practice management system designed for mental health professionals. The application emphasizes local-only data storage with no cloud synchronization, providing counselors with a secure, encrypted environment to manage client records, session notes, and treatment frameworks. The system features AI-powered note generation using local LLM models (Ollama) and audio transcription capabilities (Whisper), all while maintaining complete data sovereignty and HIPAA-like privacy standards.
+TheraVault is a privacy-first, offline counselling practice management system designed for mental health professionals. The application emphasizes local-only data storage with no cloud synchronization, providing counselors with a secure, encrypted environment to manage client records, session notes, and treatment frameworks. The system features AI-powered note generation using local LLM models (Ollama) and audio transcription capabilities (Whisper), all while maintaining complete data sovereignty and HIPAA-like privacy standards.
 
 ## Recent Changes (November 11, 2025)
 
@@ -48,6 +48,47 @@ CounselSync is a privacy-first, offline counselling practice management system d
 - Storage interface type-safe with Insert/Update type separation
 - Frontend-backend integration solid with React Query cache invalidation
 - Error handling returns structured 400/404/500 responses with validation details
+
+## Product Rollout Plan
+
+### Phase 1: Core CRM Release (Current)
+**Status**: Ready for initial deployment
+- Complete counseling practice management system
+- Client records, session tracking, notes, and treatment frameworks
+- Dual deployment: Cloud version + Desktop installers (Windows/Mac/Linux)
+- Installer size: ~100MB per platform
+- **Current capabilities**: Full-featured CRM without AI
+
+### Phase 2: Auto-Update System (Next Priority)
+**Goal**: Enable seamless desktop app updates
+- Implement Electron auto-updater for desktop releases
+- Set up update server with release manifests
+- Version checking and background downloads
+- Users get notified of updates without manual reinstall
+- **Benefit**: Smooth transition to AI features in Phase 3
+
+### Phase 3: AI-Powered Features (Future)
+**Goal**: Add local AI capabilities for enhanced productivity
+
+**Option A - Bundled AI (Recommended)**:
+- Bundle Ollama (LLM) and Whisper (transcription) with installer
+- Installer size: ~500-700MB (includes all AI models)
+- One-click installation with everything included
+- True offline AI capabilities out of the box
+
+**Option B - Modular Install**:
+- Keep base installer at ~100MB
+- Prompt users to install AI components separately if desired
+- Downloads AI models on-demand (~400-600MB additional)
+- More flexible but requires two-step setup
+
+**AI Features to implement**:
+- Session audio transcription via faster-whisper
+- AI-generated clinical notes from transcriptions using Ollama (llama3.1:8b)
+- Treatment framework suggestions based on session content
+- Chat-based clinical assistant for therapeutic guidance
+
+**Privacy Guarantee**: All AI processing occurs locally on user's machine - no data sent to external services
 
 ## User Preferences
 

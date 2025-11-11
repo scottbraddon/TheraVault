@@ -31,7 +31,7 @@ export default function Landing() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Lock className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-bold">CounselSync</h1>
+            <h1 className="text-2xl font-bold">TheraVault</h1>
           </div>
         </div>
       </header>
@@ -144,7 +144,7 @@ export default function Landing() {
 
       <footer className="border-t mt-24">
         <div className="container mx-auto px-4 py-8 text-center text-sm text-muted-foreground">
-          <p>CounselSync - Privacy-first counselling practice management</p>
+          <p>TheraVault - Privacy-first counselling practice management</p>
         </div>
       </footer>
     </div>

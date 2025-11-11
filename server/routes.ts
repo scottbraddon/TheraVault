@@ -317,9 +317,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     // Map platform to installer filename
     const installerFiles: Record<string, string> = {
-      windows: "CounselSync-Setup.exe",
-      mac: "CounselSync.dmg",
-      linux: "CounselSync.AppImage",
+      windows: "TheraVault-Setup.exe",
+      mac: "TheraVault.dmg",
+      linux: "TheraVault.AppImage",
     };
 
     const filename = installerFiles[platform];

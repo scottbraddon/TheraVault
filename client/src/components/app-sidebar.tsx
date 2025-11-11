@@ -52,7 +52,7 @@ export function AppSidebar() {
             <div className="flex items-center gap-2">
               <Lock className="h-5 w-5 text-primary" />
               <div>
-                <h2 className="text-lg font-semibold" data-testid="text-app-title">CounselSync</h2>
+                <h2 className="text-lg font-semibold" data-testid="text-app-title">TheraVault</h2>
                 <p className="text-xs text-muted-foreground">Local Workspace</p>
               </div>
             </div>

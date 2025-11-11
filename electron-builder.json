@@ -1,6 +1,6 @@
 {
-  "appId": "com.counselsync.app",
-  "productName": "CounselSync",
+  "appId": "com.theravault.app",
+  "productName": "TheraVault",
   "directories": {
     "buildResources": "build",
     "output": "release"
