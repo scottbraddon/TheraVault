@@ -1,4 +1,4 @@
-import { Home, Users, Calendar, Settings, Lock } from "lucide-react";
+import { Home, Users, Calendar, Settings, Lock, BookOpen } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import {
   Sidebar,
@@ -28,6 +28,11 @@ const menuItems = [
     title: "Sessions",
     url: "/sessions",
     icon: Calendar,
+  },
+  {
+    title: "Frameworks",
+    url: "/frameworks",
+    icon: BookOpen,
   },
   {
     title: "Settings",

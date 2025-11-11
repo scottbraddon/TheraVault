@@ -8,7 +8,9 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Dashboard from "@/pages/dashboard";
 import Clients from "@/pages/clients";
+import ClientDetail from "@/pages/client-detail";
 import Sessions from "@/pages/sessions";
+import Frameworks from "@/pages/frameworks";
 import Settings from "@/pages/settings";
 import NotFound from "@/pages/not-found";
 
@@ -17,7 +19,9 @@ function Router() {
     <Switch>
       <Route path="/" component={Dashboard} />
       <Route path="/clients" component={Clients} />
+      <Route path="/clients/:id" component={ClientDetail} />
       <Route path="/sessions" component={Sessions} />
+      <Route path="/frameworks" component={Frameworks} />
       <Route path="/settings" component={Settings} />
       <Route component={NotFound} />
     </Switch>

@@ -1,9 +1,12 @@
-import { Users, Calendar, FileText, Clock } from "lucide-react";
+import { useState } from "react";
+import { Users, Calendar, FileText, Clock, MessageSquare } from "lucide-react";
 import { StatsCard } from "@/components/stats-card";
 import { OfflineIndicator } from "@/components/offline-indicator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { ChatPanel } from "@/components/chat-panel";
 import { Link } from "wouter";
 
 //todo: remove mock functionality
@@ -35,11 +38,33 @@ const recentSessions = [
 ];
 
 export default function Dashboard() {
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
   return (
     <div className="p-8 space-y-8 max-w-7xl">
-      <div className="space-y-2">
-        <h1 className="text-2xl font-semibold" data-testid="text-page-title">Dashboard</h1>
-        <p className="text-muted-foreground">Overview of your counselling practice</p>
+      <div className="flex items-center justify-between gap-4">
+        <div className="space-y-2">
+          <h1 className="text-2xl font-semibold" data-testid="text-page-title">Dashboard</h1>
+          <p className="text-muted-foreground">Overview of your counselling practice</p>
+        </div>
+        
+        <Sheet open={isChatOpen} onOpenChange={setIsChatOpen}>
+          <SheetTrigger asChild>
+            <Button variant="outline" data-testid="button-open-chat">
+              <MessageSquare className="h-4 w-4 mr-2" />
+              AI Assistant
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-[500px] p-0">
+            <div className="h-full">
+              <ChatPanel
+                title="Global AI Assistant"
+                placeholder="Ask about all clients and sessions..."
+                contextType="global"
+              />
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
 
       <OfflineIndicator />
