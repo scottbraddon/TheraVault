@@ -315,11 +315,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/download/:platform", async (req, res) => {
     const { platform } = req.params;
     
-    // Map platform to installer filename
+    // Map platform to installer filename (must match electron-builder artifactName config)
     const installerFiles: Record<string, string> = {
       windows: "TheraVault-Setup.exe",
-      mac: "TheraVault.dmg",
-      linux: "TheraVault.AppImage",
+      mac: "TheraVault-mac.dmg",
+      linux: "TheraVault-linux.AppImage",
     };
 
     const filename = installerFiles[platform];
@@ -328,12 +328,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ error: "Invalid platform. Use: windows, mac, or linux" });
     }
 
+    // Check if GitHub repository is configured for automated releases
+    const githubOwner = process.env.GITHUB_OWNER;
+    const githubRepo = process.env.GITHUB_REPO;
+
+    if (githubOwner && githubRepo) {
+      // Redirect to GitHub Releases latest download
+      const downloadUrl = `https://github.com/${githubOwner}/${githubRepo}/releases/latest/download/${filename}`;
+      return res.redirect(302, downloadUrl);
+    }
+
+    // Fallback: Try to serve local file
     const filePath = `release/${filename}`;
     
-    // Check if installer file exists
     try {
       await import("fs").then(fs => fs.promises.access(filePath));
-      // File exists, serve it
+      // File exists locally, serve it
       res.download(filePath, filename, (err) => {
         if (err) {
           res.status(500).json({ 
@@ -343,18 +353,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       });
     } catch (error) {
-      // File doesn't exist yet
+      // No GitHub config and no local file - provide setup instructions
       res.status(404).json({
-        error: "Installer not yet built",
-        message: "To build the desktop installer, run: npm run electron:build",
+        error: "Installer not available",
+        message: "Desktop installers are built automatically via GitHub Actions",
+        setup: {
+          step1: "Push your code to a GitHub repository",
+          step2: "Set environment variables: GITHUB_OWNER and GITHUB_REPO",
+          step3: "Create a release tag (e.g., v1.0.0) to trigger the build",
+          step4: "GitHub Actions will build and publish installers automatically"
+        },
+        manualBuild: {
+          description: "Or build installers locally (not recommended)",
+          commands: [
+            "npm run build",
+            "npm run electron:build"
+          ]
+        },
         platform,
-        filename,
-        buildPath: filePath,
-        instructions: [
-          "1. Run 'npm run build' to build the web app",
-          "2. Run 'npm run electron:build' to create the installer",
-          `3. The installer will be created at ${filePath}`
-        ]
+        filename
       });
     }
   });

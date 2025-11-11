@@ -20,14 +20,34 @@ TheraVault is a privacy-first, offline counselling practice management system de
   - Opens application in native window
   - Properly manages server lifecycle
 - Configured electron-builder for multi-platform installers (Windows .exe, macOS .dmg, Linux .AppImage)
-- Download API endpoint at `/api/download/:platform` serves installer files
+- Download API endpoint at `/api/download/:platform` redirects to GitHub Releases
 - Auto-detects user platform for seamless download experience
 
-**Building Desktop Installers:**
-1. Build the web app: `npm run build`
-2. Build Electron installers: `npm run electron:build`
-3. Installers created in `release/` directory
-4. Download endpoint serves files from `release/`
+### Automated Installer Builds with GitHub Actions
+
+**Setup (One-Time):**
+1. Push your code to a GitHub repository
+2. Set environment variables on Replit:
+   - `GITHUB_OWNER`: Your GitHub username/organization
+   - `GITHUB_REPO`: Your repository name
+3. Commit and push the `.github/workflows/build-installers.yml` workflow file
+
+**Creating a Release:**
+1. Create and push a version tag:
+   ```bash
+   git tag v1.0.0
+   git push origin v1.0.0
+   ```
+2. GitHub Actions automatically:
+   - Builds installers for Windows, macOS, and Linux in parallel
+   - Publishes them to GitHub Releases
+   - Makes them available at the `/api/download/:platform` endpoint
+
+**How It Works:**
+- Download endpoint checks for `GITHUB_OWNER` and `GITHUB_REPO` environment variables
+- If configured, redirects users to: `https://github.com/{owner}/{repo}/releases/latest/download/{filename}`
+- GitHub automatically serves the latest release's installer
+- No manual builds required - fully automated!
 
 **Electron Development:**
 - Run `npm run dev` in one terminal (starts Express + Vite)
