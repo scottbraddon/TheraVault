@@ -4,6 +4,23 @@
 
 CounselSync is a privacy-first, offline counselling practice management system designed for mental health professionals. The application emphasizes local-only data storage with no cloud synchronization, providing counselors with a secure, encrypted environment to manage client records, session notes, and treatment frameworks. The system features AI-powered note generation using local LLM models (Ollama) and audio transcription capabilities (Whisper), all while maintaining complete data sovereignty and HIPAA-like privacy standards.
 
+## Recent Changes (November 11, 2025)
+
+### MVP Implementation Complete
+- Fixed critical session schema inconsistency - standardized on `sessionType` field across frontend/backend
+- Resolved data isolation bug - each client now correctly sees only their own sessions via `useClientSessions` hook
+- Added comprehensive Zod validation to all PATCH routes (clients, sessions, frameworks) with structured error responses
+- Created partial update schemas (`updateClientSchema`, `updateSessionSchema`, `updateFrameworkSchema`) for type-safe updates
+- Implemented cascade deletes for client removal - properly cleans up sessions, notes, and chat messages
+- Privacy regression tests passing - verified data isolation between clients in end-to-end tests
+- Complete CRUD workflow verified: client creation → session management → AI chat integration
+
+### Architecture Quality Gates Passed
+- All POST/PATCH routes validated with Zod schemas
+- Storage interface type-safe with Insert/Update type separation
+- Frontend-backend integration solid with React Query cache invalidation
+- Error handling returns structured 400/404/500 responses with validation details
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
