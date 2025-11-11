@@ -1,0 +1,114 @@
+import { useState } from "react";
+import { Plus, Search, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+
+//todo: remove mock functionality
+const mockClients = [
+  {
+    id: "1",
+    name: "Sarah Johnson",
+    lastSession: "2024-11-10",
+    totalSessions: 8,
+    status: "active",
+  },
+  {
+    id: "2",
+    name: "Michael Chen",
+    lastSession: "2024-11-09",
+    totalSessions: 15,
+    status: "active",
+  },
+  {
+    id: "3",
+    name: "Emma Williams",
+    lastSession: "2024-11-08",
+    totalSessions: 3,
+    status: "active",
+  },
+  {
+    id: "4",
+    name: "David Brown",
+    lastSession: "2024-10-28",
+    totalSessions: 12,
+    status: "inactive",
+  },
+];
+
+export default function Clients() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [clients] = useState(mockClients);
+
+  const filteredClients = clients.filter(client =>
+    client.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const getInitials = (name: string) => {
+    return name.split(" ").map(n => n[0]).join("").toUpperCase();
+  };
+
+  return (
+    <div className="p-8 space-y-8 max-w-7xl">
+      <div className="flex items-center justify-between gap-4">
+        <div className="space-y-2">
+          <h1 className="text-2xl font-semibold" data-testid="text-page-title">Clients</h1>
+          <p className="text-muted-foreground">Manage your client records</p>
+        </div>
+        <Button data-testid="button-new-client" onClick={() => console.log('Create new client')}>
+          <Plus className="h-4 w-4 mr-2" />
+          New Client
+        </Button>
+      </div>
+
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder="Search clients..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-10"
+          data-testid="input-search"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredClients.map((client) => (
+          <Card
+            key={client.id}
+            className="hover-elevate active-elevate-2 cursor-pointer"
+            data-testid={`card-client-${client.id}`}
+            onClick={() => console.log('View client:', client.id)}
+          >
+            <CardContent className="p-6">
+              <div className="flex items-start gap-4">
+                <Avatar className="h-12 w-12">
+                  <AvatarFallback>
+                    <User className="h-6 w-6" />
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-medium" data-testid={`text-client-name-${client.id}`}>{client.name}</h3>
+                    <Badge
+                      variant={client.status === "active" ? "default" : "secondary"}
+                      data-testid={`badge-status-${client.id}`}
+                    >
+                      {client.status}
+                    </Badge>
+                  </div>
+                  <div className="space-y-1 text-sm text-muted-foreground">
+                    <div>Last session: <span className="font-mono">{client.lastSession}</span></div>
+                    <div>Total sessions: {client.totalSessions}</div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
