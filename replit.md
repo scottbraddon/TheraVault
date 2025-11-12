@@ -6,6 +6,12 @@ TheraVault is a privacy-first, offline counselling practice management system de
 
 ## Recent Changes (November 12, 2025)
 
+### Windows Socket Compatibility Fix (v1.0.3)
+- Fixed Windows packaged app crashing with "ENOTSUP: operation not supported" socket error
+- **Critical fix**: Made `reusePort` socket option conditional (Linux/Mac only, skipped on Windows)
+- Windows doesn't support the `SO_REUSEPORT` socket option used by Node.js
+- App now successfully starts on all platforms without platform-specific errors
+
 ### Vite Dependency Elimination (v1.0.2)
 - Fixed packaged app crashing due to missing Vite dependencies in production
 - **Critical fix**: Refactored server to use dynamic imports for Vite (development only)
