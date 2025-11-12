@@ -4,7 +4,16 @@
 
 TheraVault is a privacy-first, offline counselling practice management system designed for mental health professionals. The application emphasizes local-only data storage with no cloud synchronization, providing counselors with a secure, encrypted environment to manage client records, session notes, and treatment frameworks. The system features AI-powered note generation using local LLM models (Ollama) and audio transcription capabilities (Whisper), all while maintaining complete data sovereignty and HIPAA-like privacy standards.
 
-## Recent Changes (November 11, 2025)
+## Recent Changes (November 12, 2025)
+
+### Electron App Launch Fix (v1.0.1)
+- Fixed Windows packaged app failing to start silently
+- **Critical fix**: Convert file paths to file URLs using `pathToFileURL()` before ESM import (required on Windows)
+- Added comprehensive file-based error logging to temp directory (`theravault-error.log`)
+- Improved path resolution using `app.getAppPath()` for packaged apps
+- Added user-friendly error dialogs with log file location
+- Added file existence check before importing server module
+- Error logs now capture full stack traces for debugging
 
 ### Dual Deployment Model Implemented
 - Created landing page at `/` with two deployment options: Cloud version and Desktop app

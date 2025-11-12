@@ -1,7 +1,7 @@
 import { app, BrowserWindow, dialog } from 'electron';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { dirname, join } from 'path';
-import { writeFileSync, appendFileSync } from 'fs';
+import { writeFileSync, appendFileSync, existsSync } from 'fs';
 import isDev from 'electron-is-dev';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -109,13 +109,22 @@ async function startServer() {
       const serverPath = join(appPath, 'dist', 'index.js');
       logToFile(`Attempting to import server from: ${serverPath}`);
       
+      // Check if the server file exists
+      if (!existsSync(serverPath)) {
+        const errorMsg = `Server module not found at ${serverPath}`;
+        logToFile(errorMsg);
+        throw new Error(errorMsg);
+      }
+      
       try {
-        // Try importing with proper path resolution
-        serverModule = await import(serverPath);
+        // Convert file path to file URL for ESM import (required on Windows)
+        const serverURL = pathToFileURL(serverPath).href;
+        logToFile(`Importing server module from URL: ${serverURL}`);
+        serverModule = await import(serverURL);
         logToFile('Server module imported successfully');
       } catch (importError) {
         logToFile('Failed to import server module', importError);
-        throw new Error(`Cannot find server module at ${serverPath}: ${importError.message}`);
+        throw new Error(`Cannot import server module: ${importError.message}`);
       }
     }
 
