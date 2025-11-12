@@ -6,6 +6,14 @@ TheraVault is a privacy-first, offline counselling practice management system de
 
 ## Recent Changes (November 12, 2025)
 
+### Vite Dependency Elimination (v1.0.2)
+- Fixed packaged app crashing due to missing Vite dependencies in production
+- **Critical fix**: Refactored server to use dynamic imports for Vite (development only)
+- Created `server/static.ts` for production static file serving without Vite dependencies
+- Updated build script to exclude Vite from production bundle using esbuild externals
+- Added cross-platform Node script (`scripts/copy-vite.js`) to replace POSIX `cp` command
+- Production bundle reduced from 25.7kb to 22.2kb by eliminating Vite bloat
+
 ### Electron App Launch Fix (v1.0.1)
 - Fixed Windows packaged app failing to start silently
 - **Critical fix**: Convert file paths to file URLs using `pathToFileURL()` before ESM import (required on Windows)
